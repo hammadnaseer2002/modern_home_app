@@ -1,0 +1,15 @@
+flutter_native_splash:
+  color: "#FCE4EC" # Hot Pink for testing
+  image: "assets/images/splash_logo.png"
+
+  # Yahan apni branding image ka path dein (yeh bottom par show hogi)
+  branding: "assets/images/b.png"
+
+  fullscreen: true
+
+  android_12:
+    color: "#FCE4EC"
+    image: "assets/images/splash_logo.png"
+
+    # Android 12+ devices ke liye bhi branding image ka path
+    branding: "assets/images/b.png"
