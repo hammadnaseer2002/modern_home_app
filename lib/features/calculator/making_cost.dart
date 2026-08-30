@@ -1,4 +1,3 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import '../home/widgets/menu_card.dart';
 import 'asphalt_calculator_screen.dart';
@@ -16,13 +15,13 @@ class MakingCostScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      extendBodyBehindAppBar: true, // Taki background orbs AppBar ke peechay bhi nazar aayein
+      extendBodyBehindAppBar: true,
       appBar: AppBar(
         title: const Text(
           'Cost Calculations',
           style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black87),
         ),
-        backgroundColor: Colors.transparent, // Transparent to show orbs
+        backgroundColor: Colors.transparent,
         elevation: 0,
         iconTheme: const IconThemeData(color: Colors.black87),
       ),
@@ -74,10 +73,8 @@ class MakingCostScreen extends StatelessWidget {
           // 4. Smooth Scrolling Main Content
           SafeArea(
             child: CustomScrollView(
-              physics: const BouncingScrollPhysics(), // Yeh smooth bouncy effect dega
+              physics: const BouncingScrollPhysics(),
               slivers: [
-
-                // Original Header Text
                 const SliverToBoxAdapter(
                   child: Padding(
                     padding: EdgeInsets.fromLTRB(15, 10, 15, 20),
@@ -92,15 +89,14 @@ class MakingCostScreen extends StatelessWidget {
                   ),
                 ),
 
-                // Cards Grid (Aapki original spacing ke sath)
                 SliverPadding(
                   padding: const EdgeInsets.all(10.10),
                   sliver: SliverGrid(
                     gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: 2,
-                      mainAxisSpacing: 16,    // Aapki purani spacing wapas aa gayi
-                      crossAxisSpacing: 20,   // Aapki purani spacing wapas aa gayi
-                      childAspectRatio: 0.95, // Aapka purana aspect ratio
+                      mainAxisSpacing: 16,
+                      crossAxisSpacing: 20,
+                      childAspectRatio: 0.95,
                     ),
                     delegate: SliverChildBuilderDelegate(
                           (context, index) {
@@ -115,7 +111,6 @@ class MakingCostScreen extends StatelessWidget {
                   ),
                 ),
 
-                // Niche thori jagah chhorne ke liye
                 const SliverPadding(padding: EdgeInsets.only(bottom: 30)),
               ],
             ),
@@ -125,7 +120,6 @@ class MakingCostScreen extends StatelessWidget {
     );
   }
 
-  // Cards ki list
   List<Widget> _getCardsList(BuildContext context) {
     return [
       MenuCard(
@@ -176,21 +170,27 @@ class MakingCostScreen extends StatelessWidget {
         color: Colors.pinkAccent,
         onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const PlasteringCalculatorScreen())),
       ),
+
+      // 👇 YAHAN AAKHRI CARD KO NAYI SCREEN KE SATH LINK KIYA HAI 👇
+      // MenuCard(
+      //   title: 'Total Project\nSummary',
+      //   imageAsset: 'assets/images/pl.png',
+      //   color: Colors.deepPurpleAccent,
+      //   onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const ProjectSummaryScreen())),
+      // ),
     ];
   }
 
-  // Yeh function har card par Smooth Fade & Slide up Animation lagayega
   Widget _buildAnimatedCard(BuildContext context, Widget card, int index) {
     return TweenAnimationBuilder(
-      // Har card thora late animate hoga (Staggered Effect)
       duration: Duration(milliseconds: 500 + (index * 100)),
       tween: Tween<double>(begin: 0, end: 1),
       curve: Curves.easeOutQuart,
       builder: (context, double value, child) {
         return Transform.translate(
-          offset: Offset(0, 50 * (1 - value)), // Card neechay se upar aayega
+          offset: Offset(0, 50 * (1 - value)),
           child: Opacity(
-            opacity: value, // Card fade in hoga
+            opacity: value,
             child: child,
           ),
         );

@@ -261,37 +261,39 @@ class _SteelWeightCalculatorScreenState
                   position: _resultSlideAnimation,
                   child: FadeTransition(
                     opacity: _resultFadeAnimation,
-                    child: Container(
-                      padding: const EdgeInsets.all(24),
-                      decoration: BoxDecoration(
-                        gradient: whiteGradient,
-                        borderRadius: BorderRadius.circular(28),
-                        boxShadow: _softShadow,
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Center(
-                            child: Text(
-                              'Weight Estimations',
-                              style: TextStyle(color: textDark, fontWeight: FontWeight.w800, fontSize: 18),
+                    child: FittedBox(
+                      child: Container(
+                        padding: const EdgeInsets.all(24),
+                        decoration: BoxDecoration(
+                          gradient: whiteGradient,
+                          borderRadius: BorderRadius.circular(28),
+                          boxShadow: _softShadow,
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Center(
+                              child: Text(
+                                'Weight Estimations',
+                                style: TextStyle(color: textDark, fontWeight: FontWeight.w800, fontSize: 18),
+                              ),
                             ),
-                          ),
-                          const SizedBox(height: 24),
-
-                          _resultRow('Weight per Meter', '${_weightPerMeter!.toStringAsFixed(3)} kg/m', false),
-                          const SizedBox(height: 8),
-                          _resultRow('Weight per Bar', '${_weightPerBar!.toStringAsFixed(2)} kg', false),
-
-                          const Padding(
-                            padding: EdgeInsets.symmetric(vertical: 16),
-                            child: Divider(color: Color(0xFFF0F1F5), thickness: 1.5),
-                          ),
-
-                          _resultRow('Total Weight', '${_totalWeightKg!.toStringAsFixed(2)} kg', true),
-                          const SizedBox(height: 8),
-                          _resultRow('', '${_totalWeightTons!.toStringAsFixed(3)} Tons', false),
-                        ],
+                            const SizedBox(height: 24),
+                      
+                            _resultRow('Weight per Meter', '${_weightPerMeter!.toStringAsFixed(3)} kg/m', false),
+                            const SizedBox(height: 8),
+                            _resultRow('Weight per Bar', '${_weightPerBar!.toStringAsFixed(2)} kg', false),
+                      
+                            const Padding(
+                              padding: EdgeInsets.symmetric(vertical: 16),
+                              child: Divider(color: Color(0xFFF0F1F5), thickness: 1.5),
+                            ),
+                      
+                            _resultRow('Total Weight', '${_totalWeightKg!.toStringAsFixed(2)} kg', true),
+                            const SizedBox(height: 8),
+                            _resultRow('', '${_totalWeightTons!.toStringAsFixed(3)} Tons', false),
+                          ],
+                        ),
                       ),
                     ),
                   ),

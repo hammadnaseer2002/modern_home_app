@@ -244,29 +244,31 @@ class _ExcavationCalculatorScreenState
                   position: _resultSlideAnimation,
                   child: FadeTransition(
                     opacity: _resultFadeAnimation,
-                    child: Container(
-                      padding: const EdgeInsets.all(24),
-                      decoration: BoxDecoration(
-                        gradient: whiteGradient,
-                        borderRadius: BorderRadius.circular(28),
-                        boxShadow: _softShadow,
-                      ),
-                      child: Column(
-                        children: [
-                          const Text('Total Excavation Volume', style: TextStyle(color: textDark, fontWeight: FontWeight.w800, fontSize: 16)),
-                          const SizedBox(height: 20),
-                          _resultRow('Cubic Feet', '${_volumeCuFt!.toStringAsFixed(2)} cu ft', true),
-                          const Padding(
-                            padding: EdgeInsets.symmetric(vertical: 12),
-                            child: Divider(color: Color(0xFFF0F1F5), thickness: 1.5),
-                          ),
-                          _resultRow('Cubic Meters', '${_volumeCuM!.toStringAsFixed(3)} cu m', false),
-                          const Padding(
-                            padding: EdgeInsets.symmetric(vertical: 12),
-                            child: Divider(color: Color(0xFFF0F1F5), thickness: 1.5),
-                          ),
-                          _resultRow('Cubic Yards', '${_volumeCuYd!.toStringAsFixed(2)} cu yd', false),
-                        ],
+                    child: FittedBox(
+                      child: Container(
+                        padding: const EdgeInsets.all(24),
+                        decoration: BoxDecoration(
+                          gradient: whiteGradient,
+                          borderRadius: BorderRadius.circular(28),
+                          boxShadow: _softShadow,
+                        ),
+                        child: Column(
+                          children: [
+                            const Text('Total Excavation Volume', style: TextStyle(color: textDark, fontWeight: FontWeight.w800, fontSize: 16)),
+                            const SizedBox(height: 20),
+                            _resultRow('Cubic Feet', '${_volumeCuFt!.toStringAsFixed(2)} cu ft', true),
+                            const Padding(
+                              padding: EdgeInsets.symmetric(vertical: 12),
+                              child: Divider(color: Color(0xFFF0F1F5), thickness: 1.5),
+                            ),
+                            _resultRow('Cubic Meters', '${_volumeCuM!.toStringAsFixed(3)} cu m', false),
+                            const Padding(
+                              padding: EdgeInsets.symmetric(vertical: 12),
+                              child: Divider(color: Color(0xFFF0F1F5), thickness: 1.5),
+                            ),
+                            _resultRow('Cubic Yards', '${_volumeCuYd!.toStringAsFixed(2)} cu yd', false),
+                          ],
+                        ),
                       ),
                     ),
                   ),

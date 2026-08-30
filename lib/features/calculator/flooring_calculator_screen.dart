@@ -302,34 +302,36 @@ class _FlooringCalculatorScreenState extends State<FlooringCalculatorScreen>
                   position: _resultSlideAnimation,
                   child: FadeTransition(
                     opacity: _resultFadeAnimation,
-                    child: Container(
-                      padding: const EdgeInsets.all(24),
-                      decoration: BoxDecoration(
-                        gradient: whiteGradient,
-                        borderRadius: BorderRadius.circular(28),
-                        boxShadow: _softShadow,
-                      ),
-                      child: Column(
-                        children: [
-                          const Text('Flooring Estimation', style: TextStyle(color: textDark, fontWeight: FontWeight.w800, fontSize: 16)),
-                          const SizedBox(height: 20),
-                          _resultRow('Room Area', '${_areaSqFt!.toStringAsFixed(2)} sq ft', false),
-                          const SizedBox(height: 8),
-                          _resultRow('', '${_areaSqM!.toStringAsFixed(2)} sq m', false),
-                          const Padding(
-                            padding: EdgeInsets.symmetric(vertical: 12),
-                            child: Divider(color: Color(0xFFF0F1F5), thickness: 1.5),
-                          ),
-                          _resultRow('Total With Wastage', '${_totalAreaWithWastage!.toStringAsFixed(2)} sq ft', true),
-
-                          if (_tilesNeeded != null) ...[
+                    child: FittedBox(
+                      child: Container(
+                        padding: const EdgeInsets.all(24),
+                        decoration: BoxDecoration(
+                          gradient: whiteGradient,
+                          borderRadius: BorderRadius.circular(28),
+                          boxShadow: _softShadow,
+                        ),
+                        child: Column(
+                          children: [
+                            const Text('Flooring Estimation', style: TextStyle(color: textDark, fontWeight: FontWeight.w800, fontSize: 16)),
+                            const SizedBox(height: 20),
+                            _resultRow('Room Area', '${_areaSqFt!.toStringAsFixed(2)} sq ft', false),
+                            const SizedBox(height: 8),
+                            _resultRow('', '${_areaSqM!.toStringAsFixed(2)} sq m', false),
                             const Padding(
                               padding: EdgeInsets.symmetric(vertical: 12),
                               child: Divider(color: Color(0xFFF0F1F5), thickness: 1.5),
                             ),
-                            _resultRow('Tiles Needed', '$_tilesNeeded pcs', true),
-                          ]
-                        ],
+                            _resultRow('Total With Wastage', '${_totalAreaWithWastage!.toStringAsFixed(2)} sq ft', true),
+                      
+                            if (_tilesNeeded != null) ...[
+                              const Padding(
+                                padding: EdgeInsets.symmetric(vertical: 12),
+                                child: Divider(color: Color(0xFFF0F1F5), thickness: 1.5),
+                              ),
+                              _resultRow('Tiles Needed', '$_tilesNeeded pcs', true),
+                            ]
+                          ],
+                        ),
                       ),
                     ),
                   ),

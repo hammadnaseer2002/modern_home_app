@@ -266,41 +266,43 @@ class _TankVolumeCalculatorScreenState
                   position: _resultSlideAnimation,
                   child: FadeTransition(
                     opacity: _resultFadeAnimation,
-                    child: Container(
-                      padding: const EdgeInsets.all(24),
-                      decoration: BoxDecoration(
-                        gradient: whiteGradient,
-                        borderRadius: BorderRadius.circular(28),
-                        boxShadow: _softShadow,
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Center(
-                            child: Text(
-                              'Volume & Capacity',
-                              style: TextStyle(color: textDark, fontWeight: FontWeight.w800, fontSize: 18),
+                    child: FittedBox(
+                      child: Container(
+                        padding: const EdgeInsets.all(24),
+                        decoration: BoxDecoration(
+                          gradient: whiteGradient,
+                          borderRadius: BorderRadius.circular(28),
+                          boxShadow: _softShadow,
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Center(
+                              child: Text(
+                                'Volume & Capacity',
+                                style: TextStyle(color: textDark, fontWeight: FontWeight.w800, fontSize: 18),
+                              ),
                             ),
-                          ),
-                          const SizedBox(height: 24),
-
-                          // Volumes
-                          _resultRow('Volume (cu ft)', '${_volumeCuFt!.toStringAsFixed(2)} cu ft', false),
-                          const SizedBox(height: 8),
-                          _resultRow('Volume (cu m)', '${_volumeCuM!.toStringAsFixed(3)} m³', false),
-
-                          const Padding(
-                            padding: EdgeInsets.symmetric(vertical: 16),
-                            child: Divider(color: Color(0xFFF0F1F5), thickness: 1.5),
-                          ),
-
-                          // Capacities
-                          _resultRow('Liquid Capacity', '${_liters!.toStringAsFixed(1)} Liters', true),
-                          const SizedBox(height: 8),
-                          _resultRow('US Gallons', '${_usGallons!.toStringAsFixed(1)} gal', false),
-                          const SizedBox(height: 8),
-                          _resultRow('Imperial Gallons', '${_impGallons!.toStringAsFixed(1)} gal', false),
-                        ],
+                            const SizedBox(height: 24),
+                      
+                            // Volumes
+                            _resultRow('Volume (cu ft)', '${_volumeCuFt!.toStringAsFixed(2)} cu ft', false),
+                            const SizedBox(height: 8),
+                            _resultRow('Volume (cu m)', '${_volumeCuM!.toStringAsFixed(3)} m³', false),
+                      
+                            const Padding(
+                              padding: EdgeInsets.symmetric(vertical: 16),
+                              child: Divider(color: Color(0xFFF0F1F5), thickness: 1.5),
+                            ),
+                      
+                            // Capacities
+                            _resultRow('Liquid Capacity', '${_liters!.toStringAsFixed(1)} Liters', true),
+                            const SizedBox(height: 8),
+                            _resultRow('US Gallons', '${_usGallons!.toStringAsFixed(1)} gal', false),
+                            const SizedBox(height: 8),
+                            _resultRow('Imperial Gallons', '${_impGallons!.toStringAsFixed(1)} gal', false),
+                          ],
+                        ),
                       ),
                     ),
                   ),

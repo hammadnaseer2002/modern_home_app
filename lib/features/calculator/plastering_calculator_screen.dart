@@ -275,47 +275,49 @@ class _PlasteringCalculatorScreenState
                   position: _resultSlideAnimation,
                   child: FadeTransition(
                     opacity: _resultFadeAnimation,
-                    child: Container(
-                      padding: const EdgeInsets.all(24),
-                      decoration: BoxDecoration(
-                        gradient: whiteGradient,
-                        borderRadius: BorderRadius.circular(28),
-                        boxShadow: _softShadow,
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Center(
-                            child: Text(
-                              'Material Requirements',
-                              style: TextStyle(color: textDark, fontWeight: FontWeight.w800, fontSize: 18),
+                    child: FittedBox(
+                      child: Container(
+                        padding: const EdgeInsets.all(24),
+                        decoration: BoxDecoration(
+                          gradient: whiteGradient,
+                          borderRadius: BorderRadius.circular(28),
+                          boxShadow: _softShadow,
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Center(
+                              child: Text(
+                                'Material Requirements',
+                                style: TextStyle(color: textDark, fontWeight: FontWeight.w800, fontSize: 18),
+                              ),
                             ),
-                          ),
-                          const SizedBox(height: 24),
-
-                          // Area & Volumes Section
-                          _resultRow('Plaster Area', '${_areaSqFt!.toStringAsFixed(2)} sq ft', false),
-                          const SizedBox(height: 8),
-                          _resultRow('Wet Volume', '${_wetVolumeM3!.toStringAsFixed(3)} m³', false),
-                          const SizedBox(height: 8),
-                          _resultRow('Dry Volume (1.33x)', '${_dryVolumeM3!.toStringAsFixed(3)} m³', false),
-
-                          const Padding(
-                            padding: EdgeInsets.symmetric(vertical: 16),
-                            child: Divider(color: Color(0xFFF0F1F5), thickness: 1.5),
-                          ),
-
-                          // Materials Section
-                          _resultRow('Cement Needed', '${_cementBags!.toStringAsFixed(2)} Bags', true),
-                          const SizedBox(height: 4),
-                          _resultRow('', '${_cementKg!.toStringAsFixed(1)} kg', false),
-
-                          const SizedBox(height: 16),
-
-                          _resultRow('Sand Required', '${_sandCuFt!.toStringAsFixed(2)} cu ft', true),
-                          const SizedBox(height: 4),
-                          _resultRow('', '${_sandM3!.toStringAsFixed(3)} m³', false),
-                        ],
+                            const SizedBox(height: 24),
+                      
+                            // Area & Volumes Section
+                            _resultRow('Plaster Area', '${_areaSqFt!.toStringAsFixed(2)} sq ft', false),
+                            const SizedBox(height: 8),
+                            _resultRow('Wet Volume', '${_wetVolumeM3!.toStringAsFixed(3)} m³', false),
+                            const SizedBox(height: 8),
+                            _resultRow('Dry Volume (1.33x)', '${_dryVolumeM3!.toStringAsFixed(3)} m³', false),
+                      
+                            const Padding(
+                              padding: EdgeInsets.symmetric(vertical: 16),
+                              child: Divider(color: Color(0xFFF0F1F5), thickness: 1.5),
+                            ),
+                      
+                            // Materials Section
+                            _resultRow('Cement Needed', '${_cementBags!.toStringAsFixed(2)} Bags', true),
+                            const SizedBox(height: 4),
+                            _resultRow('', '${_cementKg!.toStringAsFixed(1)} kg', false),
+                      
+                            const SizedBox(height: 16),
+                      
+                            _resultRow('Sand Required', '${_sandCuFt!.toStringAsFixed(2)} cu ft', true),
+                            const SizedBox(height: 4),
+                            _resultRow('', '${_sandM3!.toStringAsFixed(3)} m³', false),
+                          ],
+                        ),
                       ),
                     ),
                   ),

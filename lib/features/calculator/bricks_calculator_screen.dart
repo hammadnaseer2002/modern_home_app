@@ -296,44 +296,46 @@ class _BricksCalculatorScreenState extends State<BricksCalculatorScreen>
                     position: _resultSlideAnimation,
                     child: FadeTransition(
                       opacity: _resultFadeAnimation,
-                      child: Container(
-                        padding: const EdgeInsets.all(24),
-                        decoration: BoxDecoration(
-                          gradient: whiteGradient,
-                          borderRadius: BorderRadius.circular(28),
-                          boxShadow: _softShadow,
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            const Text('Estimated Bricks', style: TextStyle(color: textLight, fontWeight: FontWeight.w500, fontSize: 15)),
-                            const SizedBox(height: 8),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.baseline,
-                              textBaseline: TextBaseline.alphabetic,
-                              children: [
-                                Text(
-                                  '$_resultBricks',
-                                  style: const TextStyle(fontSize: 48, fontWeight: FontWeight.w900, color: textDark, letterSpacing: -1),
-                                ),
-                                const SizedBox(width: 8),
-                                const Text('Pcs', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700, color: textLight)),
-                              ],
-                            ),
-                            const Padding(
-                              padding: EdgeInsets.symmetric(vertical: 16),
-                              child: Divider(color: Color(0xFFF0F1F5), thickness: 1.5),
-                            ),
-                            _resultRow('Total Wall Area', '${_calculatedAreaSqFt!.toStringAsFixed(1)} sq ft', false),
-                            const SizedBox(height: 12),
-                            _resultRow('Wall Structure', _wallThickness, false),
-                            const Padding(
-                              padding: EdgeInsets.symmetric(vertical: 16),
-                              child: Divider(color: Color(0xFFF0F1F5), thickness: 1.5),
-                            ),
-                            _resultRow('With 5% Wastage', '${(_resultBricks! * 1.05).ceil()} Pcs', true),
-                          ],
+                      child: FittedBox(
+                        child: Container(
+                          padding: const EdgeInsets.all(24),
+                          decoration: BoxDecoration(
+                            gradient: whiteGradient,
+                            borderRadius: BorderRadius.circular(28),
+                            boxShadow: _softShadow,
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              const Text('Estimated Bricks', style: TextStyle(color: textLight, fontWeight: FontWeight.w500, fontSize: 15)),
+                              const SizedBox(height: 8),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.baseline,
+                                textBaseline: TextBaseline.alphabetic,
+                                children: [
+                                  Text(
+                                    '$_resultBricks',
+                                    style: const TextStyle(fontSize: 25, fontWeight: FontWeight.w900, color: textDark, letterSpacing: -1),
+                                  ),
+                                  const SizedBox(width: 8),
+                                  const Text('Pcs', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700, color: textLight)),
+                                ],
+                              ),
+                              const Padding(
+                                padding: EdgeInsets.symmetric(vertical: 16),
+                                child: Divider(color: Color(0xFFF0F1F5), thickness: 1.5),
+                              ),
+                              _resultRow('Total Wall Area', '${_calculatedAreaSqFt!.toStringAsFixed(1)} sq ft', false),
+                              const SizedBox(height: 12),
+                              _resultRow('Wall Structure', _wallThickness, false),
+                              const Padding(
+                                padding: EdgeInsets.symmetric(vertical: 16),
+                                child: Divider(color: Color(0xFFF0F1F5), thickness: 1.5),
+                              ),
+                              _resultRow('With 5% Wastage', '${(_resultBricks! * 1.05).ceil()} Pcs', true),
+                            ],
+                          ),
                         ),
                       ),
                     ),
