@@ -165,7 +165,7 @@ class _MyCreationScreenState extends State<MyCreationScreen> {
                   BoxShadow(color: const Color(0xFF94A3B8).withOpacity(0.4), offset: const Offset(4, 4), blurRadius: 10),
                 ],
               ),
-              child: const Icon(Icons.architecture_rounded, size: 60, color: Color(0xFF94A3B8)),
+              child: const Icon(Icons.image, size: 60, color: Color(0xFF94A7B8)),
             ),
             const SizedBox(height: 24),
             const Text(

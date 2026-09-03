@@ -229,7 +229,7 @@ class HomeScreen extends StatelessWidget {
             MaterialPageRoute(builder: (_) => const MapWizardScreen())),
       ),
       MenuCard(
-        title: 'Interior\n Designs',
+        title: 'Interior\nDesign',
         imageAsset: 'assets/images/in1.png',
         color: AppColors.interior,
         // Yahan se API wali InteriorScreen khulegi
@@ -257,7 +257,7 @@ class HomeScreen extends StatelessWidget {
                 builder: (_) => const TemplateScreen(is2D: false))),
       ),
       MenuCard(
-        title: 'Cost \n calculator ',
+        title: 'Cost\nCalculator ',
         imageAsset: 'assets/images/co1.png',
         color: AppColors.makingCost,
         onTap: () => Navigator.push(context,

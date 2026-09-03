@@ -6,7 +6,7 @@ class GradientBanner extends StatelessWidget {
 
   // Dynamic Soft Pink Clay Gradient Palette
   static const Color clayPinkStart = Color(0xFFFCE4EC);
-  static const Color clayPinkEnd = Color(0xFFA4CEFD);   // Deep Rose Pink
+  static const Color clayPinkEnd = Color(0xFFE2D5BE);   // Deep Rose Pink
 
   @override
   Widget build(BuildContext context) {

@@ -39,6 +39,7 @@ class MapItem {
   double width;
   double height;
   String label;
+  Color? color;
 
   MapItem({
     required this.id,
@@ -48,6 +49,7 @@ class MapItem {
     required this.width,
     required this.height,
     this.label = '',
+    this.color,
   });
 }
 
@@ -59,7 +61,7 @@ class ClayContainer extends StatelessWidget {
     super.key,
     required this.child,
     this.color = Colors.white,
-    this.borderRadius = 28, // Slightly more rounded for dreamy look
+    this.borderRadius = 28,
     this.padding = const EdgeInsets.all(20),
     this.depth = 1.0,
   });
@@ -183,11 +185,14 @@ class MapWizardScreen extends StatefulWidget {
 
 class _MapWizardScreenState extends State<MapWizardScreen> {
   String _plotSize = '5 Marla (25x45)';
-  int _bedrooms = 2; // Default 2
-  int _bathrooms = 2; // Default 2
+  int _bedrooms = 2;
+  int _bathrooms = 2;
   bool _hasLivingRoom = true;
   bool _hasKitchen = true;
   bool _hasGarden = true;
+
+  final TextEditingController _widthController = TextEditingController();
+  final TextEditingController _lengthController = TextEditingController();
 
   final Color primaryText = const Color(0xFF2BA4FF);
   final Color secondaryText = const Color(0xFF1B1B3A);
@@ -195,7 +200,14 @@ class _MapWizardScreenState extends State<MapWizardScreen> {
   final Color cardLavender = const Color(0xFFF4F0FF);
   final Color btnPurple = const Color(0xFF6B73FF);
 
-  void _placeRect(List<MapItem> items, double x, double y, double w, double h, ShapeType type, String label, bool flip, double plotW, double startX, double startY, {double scale = 1.0}) {
+  @override
+  void dispose() {
+    _widthController.dispose();
+    _lengthController.dispose();
+    super.dispose();
+  }
+
+  void _placeRect(List<MapItem> items, double x, double y, double w, double h, ShapeType type, String label, bool flip, double plotW, double startX, double startY, {double scale = 1.0, Color? fillColor}) {
     double scaledX = x * scale;
     double scaledY = y * scale;
     double scaledW = w * scale;
@@ -206,7 +218,8 @@ class _MapWizardScreenState extends State<MapWizardScreen> {
         id: 'room_${math.Random().nextInt(100000)}',
         type: type,
         position: Offset(startX + finalX, startY + scaledY),
-        width: scaledW, height: scaledH, label: label
+        width: scaledW, height: scaledH, label: label,
+        color: fillColor
     ));
   }
 
@@ -246,26 +259,63 @@ class _MapWizardScreenState extends State<MapWizardScreen> {
   }
 
   void _generateAndOpenEditor() {
+    if (_plotSize == 'Custom Size') {
+      if (_widthController.text.trim().isEmpty || _lengthController.text.trim().isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Please enter Width and Length for Custom Size!'),
+            backgroundColor: Colors.redAccent,
+          ),
+        );
+        return;
+      }
+    }
+
     List<MapItem> generatedItems = [];
 
+    final Color cBed = const Color(0xFFE8F4FF);
+    final Color cBath = const Color(0xFFE0FBFC);
+    final Color cKitchen = const Color(0xFFFFF3E0);
+    final Color cLounge = const Color(0xFFF4F0FF);
+    final Color cDraw = const Color(0xFFFCE4EC);
+    final Color cPorch = const Color(0xFFF1F5F9);
+    final Color cStore = const Color(0xFFF5F5F5);
+    final Color cOts = const Color(0xFFFAFAFA);
+
     double scale = 1.0;
-    if (_plotSize.contains('3 Marla')) scale = 0.85;
-    else if (_plotSize.contains('7 Marla')) scale = 1.15;
-    else if (_plotSize.contains('10 Marla')) scale = 1.35;
-    else if (_plotSize.contains('1 Kanal')) scale = 1.7;
+    double plotWidthFeet = 25.0;
+
+    if (_plotSize == 'Custom Size') {
+      plotWidthFeet = double.tryParse(_widthController.text) ?? 25.0;
+      scale = plotWidthFeet / 25.0;
+    } else if (_plotSize.contains('3 Marla')) { scale = 0.85; plotWidthFeet = 20.0; }
+    else if (_plotSize.contains('5 Marla')) { scale = 1.0; plotWidthFeet = 25.0; }
+    else if (_plotSize.contains('7 Marla')) { scale = 1.15; plotWidthFeet = 30.0; }
+    else if (_plotSize.contains('10 Marla')) { scale = 1.35; plotWidthFeet = 35.0; }
+    else if (_plotSize.contains('1 Kanal')) { scale = 1.7; plotWidthFeet = 50.0; }
+
+    String getDim(double w, double h) {
+      int ftW = (w * plotWidthFeet / 320).round();
+      int ftH = (h * plotWidthFeet / 320).round();
+      return "$ftW' x $ftH'";
+    }
+
+    String getWide(double val) {
+      int ft = (val * plotWidthFeet / 320).round();
+      return "$ft' WIDE";
+    }
 
     double plotW = 320 * scale;
     double startX = 100;
     double startY = 100;
     bool flip = math.Random().nextBool();
+    double currentY = 0.0;
 
-    double currentY = 0.0; // Yahan se map neechay draw hona shuru hoga
-
-    // 1. BACK ZONE (Laundry)
-    _placeRect(generatedItems, 0, currentY, 320, 50, ShapeType.ots, "BACK LAUNDRY\n5' WIDE", flip, plotW, startX, startY, scale: scale);
+    // 1. BACK ZONE
+    _placeRect(generatedItems, 0, currentY, 320, 50, ShapeType.ots, "BACK LAUNDRY\n${getWide(50)}", flip, plotW, startX, startY, scale: scale, fillColor: cOts);
     currentY += 50;
 
-    // 2. SMART BEDROOMS LOOP (Dynamic multi-room generator)
+    // 2. DYNAMIC BEDROOMS LOOP (Restored to handle up to 10 bedrooms dynamically)
     int bedCount = 0;
     int bathsLeft = _bathrooms;
 
@@ -273,38 +323,32 @@ class _MapWizardScreenState extends State<MapWizardScreen> {
       int bedsInThisRow = (_bedrooms - bedCount >= 2) ? 2 : 1;
 
       if (bedsInThisRow == 2) {
-        // Left Bedroom
-        _placeRect(generatedItems, 0, currentY, 130, 160, ShapeType.square, "BED ROOM\n14' x 11'", flip, plotW, startX, startY, scale: scale);
+        _placeRect(generatedItems, 0, currentY, 130, 160, ShapeType.square, "BED ROOM\n${getDim(130, 160)}", flip, plotW, startX, startY, scale: scale, fillColor: cBed);
 
-        // Darmiyan wala Bathroom ya Store
         if (bathsLeft > 0) {
-          _placeRect(generatedItems, 130, currentY, 60, 80, ShapeType.square, "BATH\n7' x 5'", flip, plotW, startX, startY, scale: scale);
-          _placeRect(generatedItems, 130, currentY + 80, 60, 80, ShapeType.ots, "O.T.S\n7' x 5'", flip, plotW, startX, startY, scale: scale);
+          _placeRect(generatedItems, 130, currentY, 60, 80, ShapeType.square, "BATH\n${getDim(60, 80)}", flip, plotW, startX, startY, scale: scale, fillColor: cBath);
+          _placeRect(generatedItems, 130, currentY + 80, 60, 80, ShapeType.ots, "O.T.S\n${getDim(60, 80)}", flip, plotW, startX, startY, scale: scale, fillColor: cOts);
           _placeDoorV(generatedItems, 130, currentY + 50, 25, flip, plotW, startX, startY, scale: scale);
           bathsLeft--;
         } else {
-          _placeRect(generatedItems, 130, currentY, 60, 160, ShapeType.square, "STORE", flip, plotW, startX, startY, scale: scale);
+          _placeRect(generatedItems, 130, currentY, 60, 160, ShapeType.square, "STORE\n${getDim(60, 160)}", flip, plotW, startX, startY, scale: scale, fillColor: cStore);
         }
 
-        // Right Bedroom
-        _placeRect(generatedItems, 190, currentY, 130, 160, ShapeType.square, "BED ROOM\n14' x 11'", flip, plotW, startX, startY, scale: scale);
-
-        // Darwaze (Doors)
+        _placeRect(generatedItems, 190, currentY, 130, 160, ShapeType.square, "BED ROOM\n${getDim(130, 160)}", flip, plotW, startX, startY, scale: scale, fillColor: cBed);
         _placeDoorH(generatedItems, 90, currentY + 160, 30, flip, plotW, startX, startY, scale: scale);
         _placeDoorH(generatedItems, 200, currentY + 160, 30, flip, plotW, startX, startY, scale: scale);
 
         bedCount += 2;
       } else {
-        // Single Bedroom in row
-        _placeRect(generatedItems, 0, currentY, 200, 160, ShapeType.square, "MASTER BED\n16' x 14'", flip, plotW, startX, startY, scale: scale);
+        _placeRect(generatedItems, 0, currentY, 200, 160, ShapeType.square, "MASTER BED\n${getDim(200, 160)}", flip, plotW, startX, startY, scale: scale, fillColor: cBed);
         if (bathsLeft > 0) {
-          _placeRect(generatedItems, 200, currentY, 120, 100, ShapeType.square, "BATH\n10' x 6'", flip, plotW, startX, startY, scale: scale);
+          _placeRect(generatedItems, 200, currentY, 120, 100, ShapeType.square, "BATH\n${getDim(120, 100)}", flip, plotW, startX, startY, scale: scale, fillColor: cBath);
           _placeDoorV(generatedItems, 200, currentY + 60, 30, flip, plotW, startX, startY, scale: scale);
-          _placeRect(generatedItems, 200, currentY + 100, 120, 60, ShapeType.ots, "O.T.S", flip, plotW, startX, startY, scale: scale);
           bathsLeft--;
         } else {
-          _placeRect(generatedItems, 200, currentY, 120, 160, ShapeType.square, "DRESSING", flip, plotW, startX, startY, scale: scale);
+          _placeRect(generatedItems, 200, currentY, 120, 100, ShapeType.square, "DRESSING\n${getDim(120, 100)}", flip, plotW, startX, startY, scale: scale, fillColor: cStore);
         }
+        _placeRect(generatedItems, 200, currentY + 100, 120, 60, ShapeType.ots, "O.T.S\n${getDim(120, 60)}", flip, plotW, startX, startY, scale: scale, fillColor: cOts);
         _placeDoorH(generatedItems, 150, currentY + 160, 35, flip, plotW, startX, startY, scale: scale);
 
         bedCount += 1;
@@ -315,30 +359,30 @@ class _MapWizardScreenState extends State<MapWizardScreen> {
     // 3. MIDDLE ZONE (TV Lounge / Kitchen / Stairs)
     double middleHeight = 140;
     if (_hasLivingRoom) {
-      _placeRect(generatedItems, 0, currentY, 200, middleHeight, ShapeType.square, "TV LOUNGE\n16' x 12'", flip, plotW, startX, startY, scale: scale);
+      _placeRect(generatedItems, 0, currentY, 200, middleHeight, ShapeType.square, "TV LOUNGE\n${getDim(200, middleHeight)}", flip, plotW, startX, startY, scale: scale, fillColor: cLounge);
     } else {
-      _placeRect(generatedItems, 0, currentY, 200, middleHeight, ShapeType.square, "LOBBY / HALL", flip, plotW, startX, startY, scale: scale);
+      _placeRect(generatedItems, 0, currentY, 200, middleHeight, ShapeType.square, "LOBBY / HALL\n${getDim(200, middleHeight)}", flip, plotW, startX, startY, scale: scale, fillColor: cLounge);
     }
 
     if (_hasKitchen) {
-      _placeRect(generatedItems, 200, currentY, 120, 80, ShapeType.square, "KITCHEN\n9' x 8'", flip, plotW, startX, startY, scale: scale);
+      _placeRect(generatedItems, 200, currentY, 120, 80, ShapeType.square, "KITCHEN\n${getDim(120, 80)}", flip, plotW, startX, startY, scale: scale, fillColor: cKitchen);
       _placeDoorV(generatedItems, 200, currentY + 20, 30, flip, plotW, startX, startY, scale: scale);
-      _placeRect(generatedItems, 200, currentY + 80, 120, 60, ShapeType.stairs, "STAIRS\nUP", flip, plotW, startX, startY, scale: scale);
+      _placeRect(generatedItems, 200, currentY + 80, 120, 60, ShapeType.stairs, "STAIRS\nUP", flip, plotW, startX, startY, scale: scale, fillColor: cOts);
     } else {
-      _placeRect(generatedItems, 200, currentY, 120, 80, ShapeType.square, "STORE", flip, plotW, startX, startY, scale: scale);
-      _placeRect(generatedItems, 200, currentY + 80, 120, 60, ShapeType.stairs, "STAIRS\nUP", flip, plotW, startX, startY, scale: scale);
+      _placeRect(generatedItems, 200, currentY, 120, 80, ShapeType.square, "STORE\n${getDim(120, 80)}", flip, plotW, startX, startY, scale: scale, fillColor: cStore);
+      _placeRect(generatedItems, 200, currentY + 80, 120, 60, ShapeType.stairs, "STAIRS\nUP", flip, plotW, startX, startY, scale: scale, fillColor: cOts);
     }
     currentY += middleHeight;
 
     // 4. FRONT ZONE (Porch / Drawing Room / Garden)
     double frontHeight = 170;
-    _placeRect(generatedItems, 0, currentY, 160, frontHeight, ShapeType.square, "CAR PORCH\n11' x 15'", flip, plotW, startX, startY, scale: scale);
+    _placeRect(generatedItems, 0, currentY, 160, frontHeight, ShapeType.square, "CAR PORCH\n${getDim(160, frontHeight)}", flip, plotW, startX, startY, scale: scale, fillColor: cPorch);
 
     double drawH = _hasGarden ? 120 : 170;
-    _placeRect(generatedItems, 160, currentY, 160, drawH, ShapeType.square, "DRAWING ROOM\n11' x 11'", flip, plotW, startX, startY, scale: scale);
+    _placeRect(generatedItems, 160, currentY, 160, drawH, ShapeType.square, "DRAWING ROOM\n${getDim(160, drawH)}", flip, plotW, startX, startY, scale: scale, fillColor: cDraw);
 
     if (_hasGarden) {
-      _placeRect(generatedItems, 160, currentY + 120, 160, 50, ShapeType.grass, "FRONT LAWN\n5' WIDE", flip, plotW, startX, startY, scale: scale);
+      _placeRect(generatedItems, 160, currentY + 120, 160, 50, ShapeType.grass, "FRONT LAWN\n${getWide(50)}", flip, plotW, startX, startY, scale: scale);
     }
 
     _placeDoorH(generatedItems, 170, currentY, 30, flip, plotW, startX, startY, scale: scale);
@@ -347,8 +391,7 @@ class _MapWizardScreenState extends State<MapWizardScreen> {
 
     currentY += frontHeight;
 
-    // 5. DYNAMIC BOUNDARY WALL
-    _placeRect(generatedItems, -2/scale, -2/scale, 320 + (4/scale), currentY + (4/scale), ShapeType.wall, "", false, plotW, startX, startY, scale: scale);
+    _placeRect(generatedItems, -2/scale, -2/scale, 320+(4/scale), currentY+(4/scale), ShapeType.wall, "", false, plotW, startX, startY, scale: scale);
 
     Navigator.pushReplacement(
       context,
@@ -364,7 +407,10 @@ class _MapWizardScreenState extends State<MapWizardScreen> {
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [Color(0xFFFEF5F8), Color(0xFFF1F6FF)],
+            colors: [
+              Color(0xFFFEF5F8),
+              Color(0xFFF1F6FF),
+            ],
           ),
         ),
         child: SafeArea(
@@ -377,7 +423,9 @@ class _MapWizardScreenState extends State<MapWizardScreen> {
                   children: [
                     IconButton(
                       icon: Icon(Icons.arrow_back_rounded, color: secondaryText),
-                      onPressed: () => Navigator.pop(context),
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
                     ),
                     Text(
                       'Smart Blueprint',
@@ -388,13 +436,23 @@ class _MapWizardScreenState extends State<MapWizardScreen> {
                       style: TextButton.styleFrom(
                         backgroundColor: btnPurple.withOpacity(0.15),
                         padding: const EdgeInsets.symmetric(horizontal: 16),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20),
+                        ),
                       ),
-                      child: Text('Skip', style: TextStyle(color: btnPurple, fontWeight: FontWeight.w800, fontSize: 14)),
+                      child: Text(
+                        'Skip',
+                        style: TextStyle(
+                          color: btnPurple,
+                          fontWeight: FontWeight.w800,
+                          fontSize: 14,
+                        ),
+                      ),
                     ),
                   ],
                 ),
               ),
+
               Expanded(
                 child: ListView(
                   padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 8),
@@ -413,10 +471,49 @@ class _MapWizardScreenState extends State<MapWizardScreen> {
                               isExpanded: true,
                               icon: Icon(Icons.keyboard_arrow_down_rounded, color: secondaryText),
                               style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: secondaryText),
-                              items: ['3 Marla (20x34)', '5 Marla (25x45)', '7 Marla (30x53)', '10 Marla (35x65)', '1 Kanal (50x90)'].map((e) => DropdownMenuItem(value: e, child: Text(e))).toList(),
+                              items: ['3 Marla (20x34)', '5 Marla (25x45)', '7 Marla (30x53)', '10 Marla (35x65)', '1 Kanal (50x90)', 'Custom Size'].map((e) => DropdownMenuItem(value: e, child: Text(e))).toList(),
                               onChanged: (val) => setState(() => _plotSize = val!),
                             ),
                           ),
+
+                          if (_plotSize == 'Custom Size') ...[
+                            const SizedBox(height: 16),
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: TextField(
+                                    controller: _widthController,
+                                    keyboardType: TextInputType.number,
+                                    style: TextStyle(fontWeight: FontWeight.bold, color: secondaryText),
+                                    decoration: InputDecoration(
+                                      labelText: 'Width (ft) *',
+                                      labelStyle: TextStyle(color: secondaryText.withOpacity(0.5)),
+                                      filled: true,
+                                      fillColor: Colors.white.withOpacity(0.7),
+                                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide.none),
+                                      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(width: 12),
+                                Expanded(
+                                  child: TextField(
+                                    controller: _lengthController,
+                                    keyboardType: TextInputType.number,
+                                    style: TextStyle(fontWeight: FontWeight.bold, color: secondaryText),
+                                    decoration: InputDecoration(
+                                      labelText: 'Length (ft) *',
+                                      labelStyle: TextStyle(color: secondaryText.withOpacity(0.5)),
+                                      filled: true,
+                                      fillColor: Colors.white.withOpacity(0.7),
+                                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide.none),
+                                      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ]
                         ],
                       ),
                     ),
@@ -424,8 +521,10 @@ class _MapWizardScreenState extends State<MapWizardScreen> {
 
                     Row(
                       children: [
+                        // <-- RESTORED TO 10
                         Expanded(child: _buildClayCounter('Bedrooms', _bedrooms, (v) { if(v>=1 && v<=10) setState(() => _bedrooms = v); }, cardLavender)),
                         const SizedBox(width: 20),
+                        // <-- RESTORED TO 10
                         Expanded(child: _buildClayCounter('Bathrooms', _bathrooms, (v) { if(v>=0 && v<=10) setState(() => _bathrooms = v); }, cardPeach)),
                       ],
                     ),
@@ -449,9 +548,8 @@ class _MapWizardScreenState extends State<MapWizardScreen> {
                 ),
               ),
 
-              // NAYA PREMIUM GLOWING GRADIENT BUTTON
               Padding(
-                padding: const EdgeInsets.fromLTRB(24, 10, 24, 24),
+                padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
                 child: PremiumGenerateButton(
                   onTap: _generateAndOpenEditor,
                 ),
@@ -519,7 +617,11 @@ class _MapWizardScreenState extends State<MapWizardScreen> {
                   child: Container(
                     width: 20,
                     height: 20,
-                    decoration: BoxDecoration(color: Colors.white, shape: BoxShape.circle, boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.15), blurRadius: 4, offset: const Offset(0, 2))]),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      shape: BoxShape.circle,
+                      boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.15), blurRadius: 4, offset: const Offset(0, 2))],
+                    ),
                   ),
                 ),
               ),
@@ -531,9 +633,6 @@ class _MapWizardScreenState extends State<MapWizardScreen> {
   }
 }
 
-// ==========================================
-// PREMIUM GLOWING BUTTON WIDGET
-// ==========================================
 class PremiumGenerateButton extends StatefulWidget {
   final VoidCallback onTap;
   const PremiumGenerateButton({super.key, required this.onTap});
@@ -576,35 +675,28 @@ class _PremiumGenerateButtonState extends State<PremiumGenerateButton> with Sing
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(234),
             gradient: const LinearGradient(
-              colors: [Color(0xFFDDD4D4),Color(0xFFDDD4D4), ], // Purple to Cyan Dreamy Gradient
+              colors: [Color(0xFF6B73FF), Color(0xFF555DE6)],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
             boxShadow: [
               BoxShadow(
-                color: const Color(0xFFB64242).withOpacity(0.4),
-                blurRadius: 24,
-                offset: const Offset(0, 10),
+                color: const Color(0xFF6B73FF).withOpacity(0.4),
+                blurRadius: 20,
+                offset: const Offset(0, 8),
                 spreadRadius: 2,
-              ),
-              BoxShadow(
-                color: Colors.white.withOpacity(0.2),
-                blurRadius: 0,
-                offset: const Offset(0, 1),
-                spreadRadius: 0,
               ),
             ],
           ),
           child: const Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              // Icon(Icons.auto_awesome_rounded, color: Colors.white, size: 24),
               SizedBox(width: 12),
               Text(
                 'Generate Blueprint',
                 style: TextStyle(
                   fontSize: 18,
-                  color: Colors.black38,
+                  color: Colors.white,
                   fontWeight: FontWeight.w900,
                   letterSpacing: 1.0,
                 ),
@@ -648,8 +740,13 @@ class _CreateNewScreenState extends State<CreateNewScreen> {
 
   void _addItem(ShapeType type, String label) {
     double sW = 80, sH = 80;
+    Color? itemColor;
+
     switch(type) {
-      case ShapeType.square: sW=100; sH=100; break;
+      case ShapeType.square:
+        sW=100; sH=100;
+        itemColor = const Color(0xFFF1F5F9);
+        break;
       case ShapeType.doorH: sW=40; sH=20; break;
       case ShapeType.doorV: sW=20; sH=40; break;
       case ShapeType.stairs: sW=60; sH=80; break;
@@ -658,7 +755,7 @@ class _CreateNewScreenState extends State<CreateNewScreen> {
       default: break;
     }
     setState(() {
-      _items.add(MapItem(id: DateTime.now().toString(), type: type, position: const Offset(120, 200), width: sW, height: sH, label: label));
+      _items.add(MapItem(id: DateTime.now().toString(), type: type, position: const Offset(120, 200), width: sW, height: sH, label: label, color: itemColor));
       _selectedItemId = _items.last.id;
     });
   }
@@ -728,8 +825,8 @@ class _CreateNewScreenState extends State<CreateNewScreen> {
             child: Center(
                 child: ClayButton(
                     onTap: _saveMapAsPng,
-                    color: const Color(0xFFE8F1FF),
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    color: const Color(0xECE2D5BE),
+                    padding: const EdgeInsets.symmetric(horizontal: 16,vertical: 6),
                     child: Text('SAVE', style: TextStyle(color: primaryText, fontWeight: FontWeight.w900))
                 )
             ),
@@ -768,7 +865,7 @@ class _CreateNewScreenState extends State<CreateNewScreen> {
                             child: Stack(
                               clipBehavior: Clip.none,
                               children: [
-                                CustomPaint(size: Size(item.width, item.height), painter: ShapeRenderer(type: item.type, isSelected: isSelected)),
+                                CustomPaint(size: Size(item.width, item.height), painter: ShapeRenderer(type: item.type, isSelected: isSelected, fillColor: item.color)),
                                 if (item.label.isNotEmpty)
                                   Positioned.fill(
                                     child: Center(
@@ -892,7 +989,7 @@ class _ToolButton extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 6),
       child: ClayButton(
-        color: const Color(0xFFF4F0FF), // Soft lavender for tools
+        color: const Color(0xFFF4F0FF),
         onTap: onTap,
         padding: const EdgeInsets.symmetric(horizontal: 16),
         borderRadius: 20,
@@ -915,8 +1012,9 @@ class _ToolButton extends StatelessWidget {
 class ShapeRenderer extends CustomPainter {
   final ShapeType type;
   final bool isSelected;
+  final Color? fillColor;
 
-  ShapeRenderer({required this.type, required this.isSelected});
+  ShapeRenderer({required this.type, required this.isSelected, this.fillColor});
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -928,9 +1026,11 @@ class ShapeRenderer extends CustomPainter {
     final doorPaint = Paint()..color = const Color(0xFFD97706)..style = PaintingStyle.stroke..strokeWidth = 2.0;
     final eraserPaint = Paint()..color = const Color(0xFFFAFAFC)..style = PaintingStyle.fill;
 
+    final dynamicFillPaint = Paint()..color = fillColor ?? const Color(0xFFFAFAFC)..style = PaintingStyle.fill;
+
     switch (type) {
       case ShapeType.square:
-        canvas.drawRect(Rect.fromLTWH(0, 0, w, h), Paint()..color = const Color(0xFFFAFAFC)..style = PaintingStyle.fill);
+        canvas.drawRect(Rect.fromLTWH(0, 0, w, h), dynamicFillPaint);
         canvas.drawRect(Rect.fromLTWH(0, 0, w, h), thickBlackStroke);
         break;
 
@@ -939,7 +1039,7 @@ class ShapeRenderer extends CustomPainter {
         break;
 
       case ShapeType.ots:
-        canvas.drawRect(Rect.fromLTWH(0, 0, w, h), Paint()..color = const Color(0xFFFAFAFC)..style = PaintingStyle.fill);
+        canvas.drawRect(Rect.fromLTWH(0, 0, w, h), dynamicFillPaint);
         canvas.drawRect(Rect.fromLTWH(0, 0, w, h), thickBlackStroke);
         canvas.drawLine(const Offset(0, 0), Offset(w, h), thinBlackStroke);
         canvas.drawLine(Offset(w, 0), Offset(0, h), thinBlackStroke);
@@ -958,7 +1058,7 @@ class ShapeRenderer extends CustomPainter {
         break;
 
       case ShapeType.stairs:
-        canvas.drawRect(Rect.fromLTWH(0, 0, w, h), Paint()..color = const Color(0xFFFAFAFC)..style = PaintingStyle.fill);
+        canvas.drawRect(Rect.fromLTWH(0, 0, w, h), dynamicFillPaint);
         canvas.drawRect(Rect.fromLTWH(0, 0, w, h), thickBlackStroke);
         int steps = 10;
         for (int i = 1; i < steps; i++) {
@@ -984,6 +1084,6 @@ class ShapeRenderer extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant ShapeRenderer oldDelegate) {
-    return oldDelegate.type != type || oldDelegate.isSelected != isSelected;
+    return oldDelegate.type != type || oldDelegate.isSelected != isSelected || oldDelegate.fillColor != fillColor;
   }
 }

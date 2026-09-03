@@ -96,7 +96,7 @@ class MakingCostScreen extends StatelessWidget {
                       crossAxisCount: 2,
                       mainAxisSpacing: 16,
                       crossAxisSpacing: 20,
-                      childAspectRatio: 0.95,
+                      childAspectRatio: 0.97,
                     ),
                     delegate: SliverChildBuilderDelegate(
                           (context, index) {
@@ -170,14 +170,6 @@ class MakingCostScreen extends StatelessWidget {
         color: Colors.pinkAccent,
         onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const PlasteringCalculatorScreen())),
       ),
-
-      // 👇 YAHAN AAKHRI CARD KO NAYI SCREEN KE SATH LINK KIYA HAI 👇
-      // MenuCard(
-      //   title: 'Total Project\nSummary',
-      //   imageAsset: 'assets/images/pl.png',
-      //   color: Colors.deepPurpleAccent,
-      //   onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const ProjectSummaryScreen())),
-      // ),
     ];
   }
 
