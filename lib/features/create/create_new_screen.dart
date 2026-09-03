@@ -681,7 +681,7 @@ class _PremiumGenerateButtonState extends State<PremiumGenerateButton> with Sing
             ),
             boxShadow: [
               BoxShadow(
-                color: const Color(0xFF6B73FF).withOpacity(0.4),
+                color: const Color(0xFFF1447F).withOpacity(0.4),
                 blurRadius: 20,
                 offset: const Offset(0, 8),
                 spreadRadius: 2,
